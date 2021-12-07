@@ -206,9 +206,9 @@ def deltahedging(T,S,K,S0,r,sigma,B):
     psi0 = C0 -phi0*S0
 
     for i in range(1,len(times)-1):
-        d = (log(S[i]/K)+(r+sigma**2/2.)*(T-times[i])/(sigma*(T-times[i])**0.5))
+        d = (log(S[40*i]/K)+(r+sigma**2/2.)*(T-times[i])/(sigma*(T-times[i])**0.5))
         phi = 1000*-norm.cdf(-d)
-        psi = (C0-phi*S[i])/B[i]
+        psi = (C0-phi*S[40*i])/B[i]
     
     portfolio = phi*S[-1]+psi*B[-1]
     Ct = max(K-S[-1],0)
@@ -218,9 +218,9 @@ def deltahedging(T,S,K,S0,r,sigma,B):
     return payoff
 
 def simulate_deltahedge(n):
-    Z = Normaldistr(51,n,1,1)
-    S = GBM(100,51,1,n,0.2,0.06,Z)
-    B = Bond(1,51,1,0.01)
+    Z = Normaldistr(2001,n,1,1)
+    S = GBM(100,2001,1,n,0.2,0.06,Z)
+    B = Bond(1,2001,1,0.01)
     payoffs = []
     for i in range(n):
            payoffs.append(deltahedging(1,S[0][:,i],90,100,0.01,0.2,B)) 
@@ -259,24 +259,25 @@ def gammahedging(T_1,S,K_1,S0,r,sigma,B,T_2,K_2):
     gamma_put = 1/(S0*sigma*T_1**0.5)*norm.pdf(dp)
     delta_call = exp(-r*T_2)/(S0*sigma*T_2**0.5)*norm.pdf(dc)
     gamma_call = LR(10000,S0,K_2,T_2,sigma,r,r,"digital_call")
+    P0 = Digital_Callprice(S0,K_2,r,sigma,T_2)
     
     omega = 1000*gamma_put/gamma_call
 
     phi0 = 1000*-norm.cdf(dp)-omega*delta_call
-    psi0 = C0 -phi0*S0-omega*Digital_Callprice(S0,K_2,r,sigma,T_2)
+    psi0 = C0 -phi0*S0-omega*P0
 
     for i in range(1,len(times)-1):
-        dp = (log(S[i]/K_1)+(r+sigma**2/2.)*(T_1-times[i])/(sigma*(T_1-times[i])**0.5))
-        dc = (log(S[i]/K_2)+(r+sigma**2/2.)*(T_2-times[i])/(sigma*(T_2-times[i])**0.5))
+        dp = (log(S[40*i]/K_1)+(r+sigma**2/2.)*(T_1-times[i])/(sigma*(T_1-times[i])**0.5))
+        dc = (log(S[40*i]/K_2)+(r+sigma**2/2.)*(T_2-times[i])/(sigma*(T_2-times[i])**0.5))
 
 
-        gamma_put = 1/(S[i]*sigma*(T_1-times[i])**0.5)*norm.pdf(dp)
-        delta_call = exp(-r*(T_2-times[i]))/(S[i]*sigma*(T_2-times[i])**0.5)*norm.pdf(dc)
-        gamma_call = LR(10000,S[i],K_2,(T_2-times[i]),sigma,r,r,"digital_call")
+        gamma_put = 1/(S[40*i]*sigma*(T_1-times[i])**0.5)*norm.pdf(dp)
+        delta_call = exp(-r*(T_2-times[i]))/(S[40*i]*sigma*(T_2-times[i])**0.5)*norm.pdf(dc)
+        gamma_call = LR(10000,S[40*i],K_2,(T_2-times[i]),sigma,r,r,"digital_call")
         omega = 1000*gamma_put/gamma_call
 
         phi = 1000*-norm.cdf(dp)-omega*delta_call
-        psi = C0 -phi*S[i]-omega*Digital_Callprice(S[i],K_2,r,sigma,T_2-times[i])
+        psi = C0 -phi*S[40*i]-omega*Digital_Callprice(S[40*i],K_2,r,sigma,T_2-times[i])
     
     portfolio = phi*S[-1]+psi*B[-1]+omega*Digital_Callprice(S[-1],K_2,r,sigma,T_2-T_1)
     Ct = max(K-S[-1],0)
@@ -287,9 +288,9 @@ def gammahedging(T_1,S,K_1,S0,r,sigma,B,T_2,K_2):
 
 
 def simulate_gammahedge(n):
-    Z = Normaldistr(51,n,1,1)
-    S = GBM(100,51,1,n,0.2,0.06,Z)
-    B = Bond(1,51,1,0.01)
+    Z = Normaldistr(2001,n,1,1)
+    S = GBM(100,2001,1,n,0.2,0.06,Z)
+    B = Bond(1,1,1,0.01)
     payoffs = []
     for i in range(n):
            payoffs.append(gammahedging(1,S[0][:,i],90,100,0.01,0.2,B,2,120)) 
