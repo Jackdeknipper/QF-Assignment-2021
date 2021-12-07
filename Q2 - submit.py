@@ -27,7 +27,8 @@ for i in range(len(AEXdif)):
 mean = sum(variable) #Since E[sigma*dW] = 0, mean=mu*dt=mu
 var = sum((x-mean)**2 for x in variable) / (len(variable)-1) #this is equal to sigma**4
 sigma = np.sqrt(var)
-print(mean, sigma)
+mu = mean + var/2
+print(mu, sigma)
 
 
 # In[88]:
