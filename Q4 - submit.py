@@ -30,18 +30,6 @@ def BumpandReprice(n,S0,K,T,sigma,mu,r,option_type):
             X.append(exp(-r*T)*max(K-S[-1][i],0)) 
             X_h.append(exp(-r*T)*max(K-S_h[-1][i],0))
 
-        elif option_type == "Digital_call":
-            if i > K:
-                X.append(1)
-            else: 
-                X.append(0)
-
-            if i+h > K:
-                X_h.append(1)
-            else: 
-                X_h.append(0)   
-
-
     approximation = (sum(X_h)-sum(X))/(n*h)
 
     return approximation        
