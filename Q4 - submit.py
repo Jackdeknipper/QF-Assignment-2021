@@ -61,7 +61,7 @@ def LR(n,S0,K,T,sigma,mu,r,option_type):
             X.append(max(K-S[-1,i],0)*exp(-r*T)*Zi[i]/(sigma*T**0.5*S0))
         elif option_type == "digital_call":
             if S[-1,i]>K:
-                X.append(exp(-r*T)*Zi[i]/(sigma*T**0.5*S0**2))
+                X.append(exp(-r*T)*((Zi[i]**2-1)/(S0**2*sigma**2*T)-Zi[i]/(sigma*T**0.5*S0**2)))
             else:
                 X.append(0)
     
@@ -278,7 +278,7 @@ def gammahedging(T_1,S,K_1,S0,r,sigma,B,T_2,K_2):
 def simulate_gammahedge(n):
     Z = Normaldistr(2001,n,1,1)
     S = GBM(100,2001,1,n,0.2,0.06,Z)
-    B = Bond(1,1,1,0.01)
+    B = Bond(1,2001,1,0.01)
     payoffs = []
     for i in range(n):
            payoffs.append(gammahedging(1,S[0][:,i],90,100,0.01,0.2,B,2,120)) 
@@ -287,7 +287,7 @@ def simulate_gammahedge(n):
     return payoffs
 
 
-#y = simulate_gammahedge(2500)
-#writeFV(y)
+y = simulate_gammahedge(100)
+writeFV(y)
 
 
